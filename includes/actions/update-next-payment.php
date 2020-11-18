@@ -15,82 +15,48 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @class Action_Subscription_Update_Next_Payment
  * @since 1.0.0
  */
-class Action_Subscription_Update_Next_Payment extends \AutomateWoo\Action_Subscription_Edit_Item_Abstract {
+class Action_Subscription_Update_Next_Payment extends \AutomateWoo\Action {
+
+	/**
+	 * A subscription is needed so that it can be edited by instances of this action.
+	 *
+	 * @var array
+	 */
+	public $required_data_items = [ 'subscription' ];
 
 
 	/**
 	 * Explain to store admin what this action does via a unique title and description.
 	 */
-	function load_admin_details() {
+	public function load_admin_details() {
 		parent::load_admin_details();
 		$this->title       = __( 'Update Next Payment', 'automatewoo-subscriptions' );
 		$this->description = __( 'Change a subscription\'s next payment date.', 'automatewoo-subscriptions' );
+		$this->group = __( 'Subscription', 'automatewoo' );
 	}
 
-
 	/**
-	 * Add currency selection field to the action's admin UI.
-	 */
-	function load_fields() {
-		$this->add_currency_code_field();
-	}
-
-
-	/**
-	 * Method to get the chosen currency to set on the subscription.
-	 *
-	 * @return array
-	 */
-	protected function get_object_for_edit() {
-		return $this->get_option( 'currency_code' );
-	}
-
-
-	/**
-	 * Set the chosen currency on a subscription.
-	 *
-	 * @param string           $new_currency_code Currency code. One of the keys from get_woocommerce_currencies(). The return value of @see $this->get_object_for_edit().
-	 * @param \WC_Subscription $subscription Instance of the subscription being edited by this action.
+	 * Edit the item managed by this class on the subscription passed in the workflow's trigger
 	 *
 	 * @throws \Exception When there is an error.
 	 */
-	protected function edit_subscription( $new_currency_code, $subscription ) {
-		$subscription->set_currency( $new_currency_code );
-		$subscription->save();
-	}
+	public function run() {
+		$subscription = $this->get_subscription_to_edit();
 
-
-	/**
-	 * Get the note to record on the subscription to record the currency change
-	 *
-	 * @param string $new_currency_code Currency code. One of the keys from get_woocommerce_currencies(). The return value of @see $this->get_object_for_edit().
-	 * @return string
-	 */
-	protected function get_note( $new_currency_code ) {
-		return sprintf( __( '%1$s workflow run: updated subscription currency to %2$s. (Workflow ID: %3$d)', 'automatewoo-subscriptions' ), $this->workflow->get_title(), $new_currency_code, $this->workflow->get_id() );
-	}
-
-
-	/**
-	 * Add a select field for currency
-	 */
-	protected function add_currency_code_field() {
-
-		$currency_code_options = get_woocommerce_currencies();
-
-		foreach ( $currency_code_options as $code => $name ) {
-			$currency_code_options[ $code ] = $code . ' - ' . $name . ' (' . get_woocommerce_currency_symbol( $code ) . ')';
+		if ( ! $object || ! $subscription ) {
+			return;
 		}
 
-		asort( $currency_code_options );
+		$this->edit_subscription( $object, $subscription );
+		$this->add_note( $object, $subscription );
+	}
 
-		$select = new \AutomateWoo\Fields\Select();
-		$select->set_required();
-		$select->set_name( 'currency_code' );
-		$select->set_title( __( 'New Currency', 'automatewoo-subscriptions' ) );
-		$select->set_options( $currency_code_options );
-		$select->set_default( get_woocommerce_currency() );
-
-		$this->add_field( $select );
+	/**
+	 * Get the subscription passed in by the workflow's trigger.
+	 *
+	 * @return \WC_Subscription|false
+	 */
+	protected function get_subscription_to_edit() {
+		return $this->workflow->data_layer()->get_subscription();
 	}
 }
