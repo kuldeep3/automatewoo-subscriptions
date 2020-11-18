@@ -30,9 +30,9 @@ class Action_Subscription_Update_Next_Payment extends \AutomateWoo\Action {
 	 */
 	public function load_admin_details() {
 		parent::load_admin_details();
-		$this->title       = __( 'Update Next Payment', 'automatewoo-subscriptions' );
-		$this->description = __( 'Change a subscription\'s next payment date.', 'automatewoo-subscriptions' );
-		$this->group = __( 'Subscription', 'automatewoo' );
+		$this->title       	= __( 'Update Next Payment', 'automatewoo-subscriptions' );
+		$this->description 	= __( 'Change a subscription\'s next payment date.', 'automatewoo-subscriptions' );
+		$this->group 		= __( 'Subscription', 'automatewoo' );
 	}
 
 	/**
@@ -42,16 +42,14 @@ class Action_Subscription_Update_Next_Payment extends \AutomateWoo\Action {
 	 */
 	public function run() {
 		$subscription 		= $this->get_subscription_to_edit();
-		$next_payment_date 	= $this->get_option('next_payment_date');
-		$next_payment_time 	= implode( ":", $this->get_option('next_payment_time') );
 		$subscription_id 	= $subscription->get_id();
 		$old_payment_date 	= get_post_meta( $subscription_id, '_schedule_next_payment' );
 		update_post_meta( $subscription_id, '_old_renewal_date', implode( " ", $old_payment_date ) );
-		$date_string = sprintf('%1$s %2$s', $this->get_option( 'next_payment_date' ), implode(":", $this->get_option( 'next_payment_time' ) ).":00" );
-		$new_payment_date_string = wcs_get_datetime_from($date_string);
+		$date_string = sprintf( '%1$s %2$s', $this->get_option( 'next_payment_date' ), implode(":", $this->get_option( 'next_payment_time' ) ).":00" );
+		$new_payment_date_string = wcs_get_datetime_from( $date_string );
 		$subscription->update_dates(
 			array(
-				'next_payment' => wcs_get_datetime_utc_string($new_payment_date_string),
+				'next_payment' => wcs_get_datetime_utc_string( $new_payment_date_string ),
 			)
 		);
 	}
