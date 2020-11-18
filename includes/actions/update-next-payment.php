@@ -41,14 +41,19 @@ class Action_Subscription_Update_Next_Payment extends \AutomateWoo\Action {
 	 * @throws \Exception When there is an error.
 	 */
 	public function run() {
-		$subscription = $this->get_subscription_to_edit();
-
-		if ( ! $object || ! $subscription ) {
-			return;
-		}
-
-		$this->edit_subscription( $object, $subscription );
-		$this->add_note( $object, $subscription );
+		$subscription 		= $this->get_subscription_to_edit();
+		$next_payment_date 	= $this->get_option('next_payment_date');
+		$next_payment_time 	= implode( ":", $this->get_option('next_payment_time') );
+		$subscription_id 	= $subscription->get_id();
+		$old_payment_date 	= get_post_meta( $subscription_id, '_schedule_next_payment' );
+		update_post_meta( $subscription_id, '_old_renewal_date', implode( " ", $old_payment_date ) );
+		$date_string = sprintf('%1$s %2$s', $this->get_option( 'next_payment_date' ), implode(":", $this->get_option( 'next_payment_time' ) ).":00" );
+		$new_payment_date_string = wcs_get_datetime_from($date_string);
+		$subscription->update_dates(
+			array(
+				'next_payment' => wcs_get_datetime_utc_string($new_payment_date_string),
+			)
+		);
 	}
 
 	/**
@@ -58,5 +63,23 @@ class Action_Subscription_Update_Next_Payment extends \AutomateWoo\Action {
 	 */
 	protected function get_subscription_to_edit() {
 		return $this->workflow->data_layer()->get_subscription();
+	}
+
+	function load_fields() {
+		$this->add_payment_fields();
+	}
+
+	protected function add_payment_fields() {
+		$date = new \AutomateWoo\Fields\Date();
+		$date->set_required();
+		$date->set_name( 'next_payment_date' );
+		$date->set_title( __( 'Next Payment Date', 'automatewoo-subscriptions' ) );
+		$this->add_field( $date );
+
+		$time = new \AutomateWoo\Fields\Time();
+		$time->set_required();
+		$time->set_name( 'next_payment_time' );
+		$time->set_title( __( 'Next Payment Time', 'automatewoo-subscriptions' ) );
+		$this->add_field( $time );
 	}
 }
