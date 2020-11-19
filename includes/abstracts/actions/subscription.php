@@ -6,12 +6,12 @@ defined( 'ABSPATH' ) || exit;
 
 
 /**
- * Define shared methods to edit renewal date on a subscription.
+ * Abstract class to define action on a subscription object.
  *
- * @class Abstract_Action_Subscription_Edit_Renewal
+ * @class Abstract_Action_Subscription
  * @since 1.0
  */
-abstract class Abstract_Action_Subscription_Edit_Renewal extends \AutomateWoo\Action {
+abstract class Abstract_Action_Subscription extends \AutomateWoo\Action {
 
 
 	/**
