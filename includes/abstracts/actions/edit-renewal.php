@@ -6,9 +6,9 @@ defined( 'ABSPATH' ) || exit;
 
 
 /**
- * Define shared methods to add, remove or update shipping line items on a subscription.
+ * Define shared methods to edit renewal date on a subscription.
  *
- * @class Abstract_Action_Subscription_Edit_Shipping
+ * @class Abstract_Action_Subscription_Edit_Renewal
  * @since 1.0
  */
 abstract class Abstract_Action_Subscription_Edit_Renewal extends \AutomateWoo\Action {
