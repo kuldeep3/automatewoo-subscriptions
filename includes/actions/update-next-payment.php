@@ -30,7 +30,6 @@ class Action_Subscription_Update_Next_Payment extends Abstract_Action_Subscripti
 	 */
 	public function run() {
 		$subscription     = $this->get_subscription_to_edit();
-		$subscription_id  = $subscription->get_id();
 		$old_payment_date = $subscription->get_date( 'next_payment' );
 		$subscription->update_meta_data( '_old_schedule_next_payment', $old_payment_date );
 		$subscription->save();
