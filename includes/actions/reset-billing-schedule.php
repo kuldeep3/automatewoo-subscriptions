@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
  * Reset a subscription's billing schedule.
  *
  *
- * @class Action_Subscription_Revert_Renewal_Date
- * @since 1.0.0
+ * @class Action_Subscription_Reset_Billing_Schedule
+ * @since 1.2.3
  */
 class Action_Subscription_Reset_Billing_Schedule extends Abstract_Action_Subscription {
 
