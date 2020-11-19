@@ -36,7 +36,7 @@ class Action_Subscription_Reset_Billing_Schedule extends Abstract_Action_Subscri
 		$new_payment_date	= date( 'Y-m-d H:i:s', wcs_add_time( $billing_interval, $billing_period, wcs_date_to_time( $old_renewal_date ) ) );
 		$subscription->update_dates(
 			array(
-				'next_payment' => wcs_get_datetime_utc_string( $new_payment_date ),
+				'next_payment' => $new_payment_date,
 			)
 		);
 		$subscription->delete_meta_data( '_old_schedule_next_payment' );
