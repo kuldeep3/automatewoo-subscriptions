@@ -111,6 +111,7 @@ final class AutomateWoo_Subscriptions {
 			'subscription_remove_shipping'      => 'AutomateWoo_Subscriptions\Action_Subscription_Remove_Shipping',
 			'subscription_update_currency'      => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Currency',
 			'subscription_update_next_payment'  => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Next_Payment',
+			'subscription_revert_renewal_date'  => 'AutomateWoo_Subscriptions\Action_Subscription_Revert_Renewal_Date',
 			'subscription_recalculate_taxes'    => 'AutomateWoo_Subscriptions\Action_Subscription_Recalculate_Taxes',
 			'subscription_regenerate_downloads' => 'AutomateWoo_Subscriptions\Action_Regenerate_Download_Permissions',
 		] );
