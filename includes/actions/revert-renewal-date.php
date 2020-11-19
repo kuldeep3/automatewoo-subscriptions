@@ -5,12 +5,12 @@ namespace AutomateWoo_Subscriptions;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Change a subscription's renewal date.
+ * Revert a subscription's renewal date.
  *
- * This class extends Abstract_Action_Subscription
+ * This class extends Abstract_Action_Subscription_Edit_Renewal
  * as it provides many useful methods for editing a subscription's renewal date.
  *
- * @class Action_Subscription_Update_Next_Payment
+ * @class Action_Subscription_Revert_Renewal_Date
  * @since 1.0.0
  */
 class Action_Subscription_Revert_Renewal_Date extends Abstract_Action_Subscription_Edit_Renewal {
