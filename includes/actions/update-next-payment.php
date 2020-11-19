@@ -37,8 +37,8 @@ class Action_Subscription_Update_Next_Payment extends Abstract_Action_Subscripti
 		$subscription->update_meta_data( '_old_schedule_next_payment', $old_payment_date );
 		$date_string = sprintf(
 			'%1$s %2$s:00',
-			$this->get_option( 'next_payment_date' ),
-			implode( ':', $this->get_option( 'next_payment_time' ) )
+			$this->get_option( 'new_payment_date' ),
+			implode( ':', $this->get_option( 'new_payment_time' ) )
 		);
 		$new_payment_date_string = wcs_get_datetime_from( $date_string );
 		$subscription->update_dates(
