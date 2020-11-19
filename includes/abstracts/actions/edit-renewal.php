@@ -21,7 +21,10 @@ abstract class Abstract_Action_Subscription_Edit_Renewal extends \AutomateWoo\Ac
 	 */
 	public $required_data_items = [ 'subscription' ];
 
-	$this->group = __( 'Subscription', 'automatewoo' );
+	public function load_admin_details() {
+		parent::load_admin_details();
+		$this->group = __( 'Subscription', 'automatewoo' );
+	}
 
 	/**
 	 * Get the subscription passed in by the workflow's trigger.
