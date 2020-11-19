@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
  * @class Action_Subscription_Update_Next_Payment
  * @since 1.0.0
  */
-class Action_Subscription_Update_Next_Payment extends Abstract_Action_Subscription_Edit_Renewal {
+class Action_Subscription_Update_Next_Payment extends Abstract_Action_Subscription {
 
 
 	/**
@@ -33,6 +33,7 @@ class Action_Subscription_Update_Next_Payment extends Abstract_Action_Subscripti
 		$subscription_id  = $subscription->get_id();
 		$old_payment_date = $subscription->get_date( 'next_payment' );
 		$subscription->update_meta_data( '_old_schedule_next_payment', $old_payment_date );
+		$subscription->save();
 		$date_string = sprintf(
 			'%1$s %2$s:00',
 			$this->get_option( 'new_payment_date' ),
