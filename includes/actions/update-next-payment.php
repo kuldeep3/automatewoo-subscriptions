@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
  *
  *
  * @class Action_Subscription_Update_Next_Payment
- * @since 1.0.0
+ * @since 1.2.3
  */
 class Action_Subscription_Update_Next_Payment extends Abstract_Action_Subscription {
 
