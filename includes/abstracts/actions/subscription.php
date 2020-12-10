@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
  * Abstract class to define action on a subscription object.
  *
  * @class Abstract_Action_Subscription
- * @since 1.2.2
+ * @since 1.2.3
  */
 abstract class Abstract_Action_Subscription extends \AutomateWoo\Action {
 

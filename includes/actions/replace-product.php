@@ -13,9 +13,31 @@ defined( 'ABSPATH' ) || exit;
  * Action to update a chosen product line item to a subscription with a chosen quantity.
  *
  * @class Action_Subscription_Replace_Product
- * @since 4.4
+ * @since 1.2.3
  */
 class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
+
+	/**
+	 * Old product ID. The product to be replaced.
+	 *
+	 * @var int
+	 */
+	private $old_product_id;
+
+	/**
+	 * New product ID. The product to be replaced with.
+	 *
+	 * @var int
+	 */
+	private $new_product_id;
+
+	/**
+	 * Set action parameters.
+	 */
+	private function set_parameters() {
+		$this->old_product_id = absint( $this->get_option( 'old_product_id' ) );
+		$this->new_product_id = absint( $this->get_option( 'new_product_id' ) );
+	}
 
 	/**
 	 * Explain to store admin what this action does via a unique title and description.
@@ -32,8 +54,23 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	 * @return void
 	 */
 	public function load_fields() {
-		$this->add_old_product_select_field();
-		$this->add_new_product_select_field();
+		$this->add_field(
+			( new \AutomateWoo\Fields\Product() )
+				->set_title( __( 'Old Product', 'automatewoo-subscriptions' ) )
+				->set_name( 'old_product_id' )
+				->set_required()
+				->set_allow_variations( true )
+				->set_allow_variable( $this->allow_variable_products )
+		);
+
+		$this->add_field(
+			( new \AutomateWoo\Fields\Product() )
+				->set_title( __( 'New Product', 'automatewoo-subscriptions' ) )
+				->set_name( 'new_product_id' )
+				->set_required()
+				->set_allow_variations( true )
+				->set_allow_variable( $this->allow_variable_products )
+		);
 	}
 
 	/**
@@ -58,7 +95,6 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	 */
 	protected $allow_variable_products = true;
 
-
 	/**
 	 * Edit the item managed by this class on the subscription passed in the workflow's trigger
 	 *
@@ -66,59 +102,65 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	 * @throws \Exception When there is an error.
 	 */
 	public function edit_subscription( $subscription ) {
+		$this->set_parameters();
 
-		$old_product_id    = absint( $this->get_data()['old_product_id'] );
-		$new_product_id    = absint( $this->get_data()['updated_product_id'] );
-		$new_product       = wc_get_product( $new_product_id );
-		$new_product_price = $new_product->get_price();
-		$add_product_args  = array();
+		if ( $this->old_product_id === $this->new_product_id ) {
+			throw new \Exception( __( 'Both the products are same', 'automatewoo-subscriptions' ) );
+		}
+
+		$old_product = wc_get_product( $this->old_product_id );
+		$new_product = wc_get_product( $this->new_product_id );
+
+		if ( ! $old_product ) {
+			throw new \Exception( __( 'Invalid product to be removed', 'automatewoo-subscriptions' ) . ' ' . $old_product );
+		}
+
+		if ( ! $new_product ) {
+			throw new \Exception( __( 'Invalid product to be added', 'automatewoo-subscriptions' ) . ' ' . $new_product );
+		}
+
+		if ( 'variable' === $new_product->get_type() ) {
+			/* translators: %s product name */
+			throw new \Exception( sprintf( __( '%s is a variable product parent and cannot be added.', 'automatewoo-subscriptions' ), $new_product->get_name() ) );
+		}
+
+		$qty = 0;
 
 		foreach ( $subscription->get_items() as $item ) {
 			$item_product_id = $item->get_product_id();
-			$item_quantity   = $item->get_quantity();
-			if ( $old_product_id === $item_product_id ) {
-				$subscription->remove_item( $item->get_id() );
+
+			if ( $this->old_product_id !== $item_product_id ) {
+				continue;
 			}
+
+			$qty = $item->get_quantity();
+			$subscription->remove_item( $item->get_id() );
+			break;
 		}
-		$this->recalculate_subscription_totals( $subscription );
-		$add_product_args['subtotal'] = wc_get_price_excluding_tax(
-			$new_product,
-			array(
-				'price' => $new_product_price,
-				'qty'   => $item_quantity,
-			)
-		);
-		$add_product_args['total']    = $add_product_args['subtotal'];
-		$subscription->add_product( $new_product, $item_quantity, $add_product_args );
-		$this->recalculate_subscription_totals( $subscription );
+
+		if ( $qty > 0 ) {
+			$subscription->add_product( $new_product, $qty );
+
+			$this->reapply_coupons( $subscription );
+			$subscription->calculate_totals( true );
+		} else {
+			throw new \Exception( sprintf( __( 'Product to be replaced not found in the subscription', 'automatewoo-subscriptions' ) . ' ' . $old_product->get_name() ) );
+		}
 	}
 
 	/**
-	 * Add a product selection field for this action
+	 * Reapply coupons.
+	 *
+	 * @param  WC_Subscription $subscription The subscription object.
 	 */
-	protected function add_old_product_select_field() {
-		$old_product_select = new \AutomateWoo\Fields\Product();
-		$old_product_select->set_required();
-		$old_product_select->set_allow_variations( true );
-		$old_product_select->set_allow_variable( $this->allow_variable_products );
-		$old_product_select->set_title( 'Old Product' );
-		$old_product_select->set_name( 'old_product_id' );
-
-		$this->add_field( $old_product_select );
-	}
-
-	/**
-	 * Add a product selection field for this action
-	 */
-	protected function add_new_product_select_field() {
-		$new_product_select = new \AutomateWoo\Fields\Product();
-		$new_product_select->set_required();
-		$new_product_select->set_allow_variations( true );
-		$new_product_select->set_allow_variable( $this->allow_variable_products );
-		$new_product_select->set_title( 'New Product' );
-		$new_product_select->set_name( 'updated_product_id' );
-
-		$this->add_field( $new_product_select );
+	private function reapply_coupons( $subscription ) {
+		$coupons = $subscription->get_coupon_codes();
+		foreach ( $coupons as $coupon_code ) {
+			$subscription->remove_coupon( wc_format_coupon_code( $coupon_code ) );
+		}
+		foreach ( $coupons as $coupon_code ) {
+			$subscription->apply_coupon( wc_format_coupon_code( $coupon_code ) );
+		}
 	}
 
 	/**
@@ -128,17 +170,15 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	 */
 	private function get_data() {
 		return array(
-			'old_product_id'     => $this->get_option( 'old_product_id' ),
-			'updated_product_id' => $this->get_option( 'updated_product_id' ),
+			'old_product_id' => $this->get_option( 'old_product_id' ),
+			'new_product_id' => $this->get_option( 'new_product_id' ),
 		);
 	}
 
 	/**
 	 * Recalculate a subscription's totals.
 	 *
-	 * @param \WC_Subscription $subscription
-	 *
-	 * @since 4.8.0
+	 * @param \WC_Subscription $subscription The subscription object.
 	 */
 	protected function recalculate_subscription_totals( $subscription ) {
 		if ( is_callable( array( $subscription, 'recalculate_coupons' ) ) ) {
@@ -153,14 +193,16 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	 *
 	 * Helpful for tracing the history of this action by viewing the subscription's notes.
 	 *
-	 * @param object $subscription Subscription data. Same data as the return value of @see $this->get_object_for_edit().
+	 * @param WC_Subscription $subscription Subscription data. Same data as the return value of @see $this->get_object_for_edit().
 	 * @return string
 	 */
 	protected function get_note( $subscription ) {
-		$old_product_id    = absint( $this->get_data()['old_product_id'] );
-		$new_product_id    = absint( $this->get_data()['updated_product_id'] );
-		$new_product_title = wc_get_product( $new_product_id )->get_title();
-		$old_product_title = wc_get_product( $old_product_id )->get_title();
-		return sprintf( __( '%1$s workflow run: Replaced %2$s with %3$s', 'automatewoo-subscriptions' ), $this->workflow->get_title(), $old_product_title, $new_product_title );
+		return sprintf(
+			/* translators: %1$s: Workflow title, %2$s: Old product title, %3$s: New product title */
+			__( '%1$s workflow run: Replaced %2$s with %3$s', 'automatewoo-subscriptions' ),
+			$this->workflow->get_title(),
+			wc_get_product( $this->old_product_id )->get_formatted_name(),
+			wc_get_product( $this->new_product_id )->get_formatted_name()
+		);
 	}
 }
