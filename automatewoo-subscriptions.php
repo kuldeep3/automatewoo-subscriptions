@@ -105,6 +105,8 @@ final class AutomateWoo_Subscriptions {
 			$actions = wcs_array_insert_after( 'subscription_add_product', $actions, 'subscription_update_product', 'AutomateWoo_Subscriptions\Action_Subscription_Update_Product' );
 		}
 
+		$actions = wcs_array_insert_after( 'subscription_remove_product', $actions, 'subscription_replace_product', 'AutomateWoo_Subscriptions\Action_Subscription_Replace_Product' );
+
 		$actions = array_merge( $actions, [
 			'subscription_add_shipping'         => 'AutomateWoo_Subscriptions\Action_Subscription_Add_Shipping',
 			'subscription_update_shipping'      => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Shipping',
@@ -112,7 +114,6 @@ final class AutomateWoo_Subscriptions {
 			'subscription_update_currency'      => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Currency',
 			'subscription_recalculate_taxes'    => 'AutomateWoo_Subscriptions\Action_Subscription_Recalculate_Taxes',
 			'subscription_regenerate_downloads' => 'AutomateWoo_Subscriptions\Action_Regenerate_Download_Permissions',
-			'subscription_replace_product'      => 'AutomateWoo_Subscriptions\Action_Subscription_Replace_Product',
 		] );
 
 		return $actions;
