@@ -132,8 +132,8 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	 */
 	private function get_data() {
 		return array(
-			'old_product_id'  => $this->get_option( 'old_product_id' ),
-			'updated_product' => $this->get_option( 'updated_product_id' ),
+			'old_product_id'     => $this->get_option( 'old_product_id' ),
+			'updated_product_id' => $this->get_option( 'updated_product_id' ),
 		);
 	}
 
