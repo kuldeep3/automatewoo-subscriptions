@@ -70,11 +70,6 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 		$old_product_id    = absint( $this->get_data()['old_product_id'] );
 		$new_product_id    = absint( $this->get_data()['updated_product_id'] );
 		$new_product       = wc_get_product( $new_product_id );
-		$old_product_title = wc_get_product( $old_product_id )->get_title();
-		$new_product_title = $new_product->get_title();
-		$subscription->update_meta_data( '_old_product_title', $old_product_title );
-		$subscription->update_meta_data( '_new_product_title', $new_product_title );
-		$subscription->save();
 		$new_product_price = $new_product->get_price();
 		$add_product_args  = array();
 
@@ -161,6 +156,10 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	 * @return string
 	 */
 	protected function get_note( $subscription ) {
-		return sprintf( __( '%1$s workflow run: Replaced %2$s with %3$s', 'automatewoo-subscriptions' ), $this->workflow->get_title(), $subscription->get_meta( '_old_product_title' ), $subscription->get_meta( '_new_product_title' ) );
+		$old_product_id    = absint( $this->get_data()['old_product_id'] );
+		$new_product_id    = absint( $this->get_data()['updated_product_id'] );
+		$new_product_title = wc_get_product( $new_product_id )->get_title();
+		$old_product_title = wc_get_product( $old_product_id )->get_title();
+		return sprintf( __( '%1$s workflow run: Replaced %2$s with %3$s', 'automatewoo-subscriptions' ), $this->workflow->get_title(), $old_product_title, $new_product_title );
 	}
 }
