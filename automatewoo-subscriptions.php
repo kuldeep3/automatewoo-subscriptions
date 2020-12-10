@@ -3,10 +3,10 @@
  * Plugin Name: AutomateWoo - Subscriptions Add-on
  * Plugin URI: https://github.com/woocommerce/automatewoo-subscriptions/
  * Description: Advanced actions for automating a subscription's lifecycle with AutomateWoo.
- * Author: WooCommerce
+ * Author: WooCommerce-ColoredCow
  * Author URI: https://woocommerce.com/
  * License: GPLv3
- * Version: 1.2.1
+ * Version: 1.2.4
  * Requires at least: 4.0
  * Tested up to: 5.6
  *
@@ -72,7 +72,7 @@ final class AutomateWoo_Subscriptions {
 	 *
 	 * @var string
 	 */
-	private $version = '1.2.1';
+	private $version = '1.2.4';
 
 	/**
 	 * Instance of singleton.
@@ -86,7 +86,7 @@ final class AutomateWoo_Subscriptions {
 	 */
 	private function __construct() {
 		include_once $this->path() . '/includes/autoloader.php';
-		add_action( 'automatewoo/actions', [ $this, 'add_actions' ], 20 );
+		add_action( 'automatewoo/actions', array( $this, 'add_actions' ), 20 );
 	}
 
 	/**
@@ -107,14 +107,19 @@ final class AutomateWoo_Subscriptions {
 
 		$actions = wcs_array_insert_after( 'subscription_remove_product', $actions, 'subscription_replace_product', 'AutomateWoo_Subscriptions\Action_Subscription_Replace_Product' );
 
-		$actions = array_merge( $actions, [
-			'subscription_add_shipping'         => 'AutomateWoo_Subscriptions\Action_Subscription_Add_Shipping',
-			'subscription_update_shipping'      => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Shipping',
-			'subscription_remove_shipping'      => 'AutomateWoo_Subscriptions\Action_Subscription_Remove_Shipping',
-			'subscription_update_currency'      => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Currency',
-			'subscription_recalculate_taxes'    => 'AutomateWoo_Subscriptions\Action_Subscription_Recalculate_Taxes',
-			'subscription_regenerate_downloads' => 'AutomateWoo_Subscriptions\Action_Regenerate_Download_Permissions',
-		] );
+		$actions = array_merge(
+			$actions,
+			array(
+				'subscription_add_shipping'           => 'AutomateWoo_Subscriptions\Action_Subscription_Add_Shipping',
+				'subscription_update_shipping'        => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Shipping',
+				'subscription_remove_shipping'        => 'AutomateWoo_Subscriptions\Action_Subscription_Remove_Shipping',
+				'subscription_update_currency'        => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Currency',
+				'subscription_update_next_payment'    => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Next_Payment',
+				'subscription_reset_billing_schedule' => 'AutomateWoo_Subscriptions\Action_Subscription_Reset_Billing_Schedule',
+				'subscription_recalculate_taxes'      => 'AutomateWoo_Subscriptions\Action_Subscription_Recalculate_Taxes',
+				'subscription_regenerate_downloads'   => 'AutomateWoo_Subscriptions\Action_Regenerate_Download_Permissions',
+			)
+		);
 
 		return $actions;
 	}
