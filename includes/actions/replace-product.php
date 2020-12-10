@@ -78,18 +78,19 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 			$item_quantity   = $item->get_quantity();
 			if ( $old_product_id === $item_product_id ) {
 				$subscription->remove_item( $item->get_id() );
-				$add_product_args['subtotal'] = wc_get_price_excluding_tax(
-					$new_product,
-					array(
-						'price' => $new_product_price,
-						'qty'   => $item_quantity,
-					)
-				);
-				$add_product_args['total']    = $add_product_args['subtotal'];
-				$subscription->add_product( $new_product, $item_quantity, $add_product_args );
-				$this->recalculate_subscription_totals( $subscription );
 			}
 		}
+		$this->recalculate_subscription_totals( $subscription );
+		$add_product_args['subtotal'] = wc_get_price_excluding_tax(
+			$new_product,
+			array(
+				'price' => $new_product_price,
+				'qty'   => $item_quantity,
+			)
+		);
+		$add_product_args['total']    = $add_product_args['subtotal'];
+		$subscription->add_product( $new_product, $item_quantity, $add_product_args );
+		$this->recalculate_subscription_totals( $subscription );
 	}
 
 	/**
