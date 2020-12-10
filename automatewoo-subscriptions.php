@@ -112,6 +112,7 @@ final class AutomateWoo_Subscriptions {
 			'subscription_update_currency'      => 'AutomateWoo_Subscriptions\Action_Subscription_Update_Currency',
 			'subscription_recalculate_taxes'    => 'AutomateWoo_Subscriptions\Action_Subscription_Recalculate_Taxes',
 			'subscription_regenerate_downloads' => 'AutomateWoo_Subscriptions\Action_Regenerate_Download_Permissions',
+			'subscription_replace_product'      => 'AutomateWoo_Subscriptions\Action_Subscription_Replace_Product',
 		] );
 
 		return $actions;
