@@ -112,11 +112,11 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 		$new_product = wc_get_product( $this->new_product_id );
 
 		if ( ! $old_product ) {
-			throw new \Exception( __( 'Invalid product to be removed', 'automatewoo-subscriptions' ) . ' ' . $old_product->get_name() );
+			throw new \Exception( __( 'Invalid product to be removed', 'automatewoo-subscriptions' ) );
 		}
 
 		if ( ! $new_product ) {
-			throw new \Exception( __( 'Invalid product to be added', 'automatewoo-subscriptions' ) . ' ' . $new_product->get_name() );
+			throw new \Exception( __( 'Invalid product to be added', 'automatewoo-subscriptions' ) );
 		}
 
 		if ( 'variable' === $new_product->get_type() ) {
