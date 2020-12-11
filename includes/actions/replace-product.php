@@ -176,19 +176,6 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	}
 
 	/**
-	 * Recalculate a subscription's totals.
-	 *
-	 * @param \WC_Subscription $subscription The subscription object.
-	 */
-	protected function recalculate_subscription_totals( $subscription ) {
-		if ( is_callable( array( $subscription, 'recalculate_coupons' ) ) ) {
-			$subscription->recalculate_coupons();
-		} else {
-			$subscription->calculate_totals();
-		}
-	}
-
-	/**
 	 * Create a note recording the subscription and workflow name to add after replacing product.
 	 *
 	 * Helpful for tracing the history of this action by viewing the subscription's notes.
