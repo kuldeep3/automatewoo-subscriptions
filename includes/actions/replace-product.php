@@ -151,21 +151,6 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	}
 
 	/**
-	 * Reapply coupons.
-	 *
-	 * @param  WC_Subscription $subscription The subscription object.
-	 */
-	private function reapply_coupons( $subscription ) {
-		$coupons = $subscription->get_coupon_codes();
-		foreach ( $coupons as $coupon_code ) {
-			$subscription->remove_coupon( wc_format_coupon_code( $coupon_code ) );
-		}
-		foreach ( $coupons as $coupon_code ) {
-			$subscription->apply_coupon( wc_format_coupon_code( $coupon_code ) );
-		}
-	}
-
-	/**
 	 * Get subscription scheme.
 	 *
 	 * @param  WC_Subscription $subscription The susbcription object.
