@@ -145,6 +145,8 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 			$item->update_meta_data( '_wcsatt_scheme', $this->get_subscription_scheme( $subscription ) );
 			$item->save();
 			$subscription->calculate_totals( true );
+			$subscription->update_meta_data( '_replaced_product', 'yes' );
+			$subscription->save();
 		} else {
 			throw new \Exception( sprintf( __( 'Product to be replaced not found in the subscription', 'automatewoo-subscriptions' ) . ' ' . $old_product->get_name() ) );
 		}
