@@ -139,9 +139,11 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 		}
 
 		if ( $qty > 0 ) {
-			$subscription->add_product( $new_product, $qty );
+			$item_id = $subscription->add_product( $new_product, $qty );
+			$item    = new \WC_Order_Item_Product( $item_id );
 
-			$this->reapply_coupons( $subscription );
+			$item->update_meta_data( '_wcsatt_scheme', $this->get_subscription_scheme( $subscription ) );
+			$item->save();
 			$subscription->calculate_totals( true );
 		} else {
 			throw new \Exception( sprintf( __( 'Product to be replaced not found in the subscription', 'automatewoo-subscriptions' ) . ' ' . $old_product->get_name() ) );
@@ -164,14 +166,18 @@ class Action_Subscription_Replace_Product extends Abstract_Action_Subscription {
 	}
 
 	/**
-	 * Store data required to replace the product in a subscription.
+	 * Get subscription scheme.
 	 *
-	 * @return array
+	 * @param  WC_Subscription $subscription The susbcription object.
+	 * @return string
 	 */
-	private function get_data() {
-		return array(
-			'old_product_id' => $this->get_option( 'old_product_id' ),
-			'new_product_id' => $this->get_option( 'new_product_id' ),
+	private function get_subscription_scheme( $subscription ) {
+		$subscription_id = $subscription->get_id();
+
+		return sprintf(
+			'%s_%s',
+			get_post_meta( $subscription_id, '_billing_interval', true ),
+			get_post_meta( $subscription_id, '_billing_period', true )
 		);
 	}
 

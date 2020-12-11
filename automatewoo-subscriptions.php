@@ -118,6 +118,7 @@ final class AutomateWoo_Subscriptions {
 				'subscription_reset_billing_schedule' => 'AutomateWoo_Subscriptions\Action_Subscription_Reset_Billing_Schedule',
 				'subscription_recalculate_taxes'      => 'AutomateWoo_Subscriptions\Action_Subscription_Recalculate_Taxes',
 				'subscription_regenerate_downloads'   => 'AutomateWoo_Subscriptions\Action_Regenerate_Download_Permissions',
+				'subscription_reapply_coupons'        => 'AutomateWoo_Subscriptions\Action_Subscription_Reapply_Coupons',
 			)
 		);
 
